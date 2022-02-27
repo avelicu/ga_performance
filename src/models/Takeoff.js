@@ -38,15 +38,15 @@ var _obstacle = {
 }
 
 var _takeoffSpeed = {
-    2740: 71,
-    2500: 68,
-    2300: 65,
-}
-
-var _fiftyFootSpeed = {
     2740: 63,
     2500: 60,
     2300: 58,
+}
+
+var _fiftyFootSpeed = {
+    2740: 71,
+    2500: 68,
+    2300: 65,
 }
  
 function getTakeoffPerformance(pa, oat, weight, wind, obstacle) {
