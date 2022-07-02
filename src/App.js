@@ -2,7 +2,9 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 
-import { getTakeoffPerformance, getTakeoffSpeed, getTakeoffFiftyFootSpeed } from './models/Takeoff.js';
+import { NormalTakeoff, PerformanceTakeoff } from './models/Takeoff.js';
+import { NormalLanding, PerformanceLanding } from './models/Landing.js';
+import { Climb } from './models/Climb.js';
 
 class App extends React.Component {
     constructor() {
@@ -56,7 +58,7 @@ class App extends React.Component {
     
     getTakeoffGroundRoll() {
         return this.prettify(
-            getTakeoffPerformance(
+            NormalTakeoff.getDistance(
                 this.state.pressureAltitude,
                 this.state.temperature,
                 this.state.weight,
@@ -66,7 +68,7 @@ class App extends React.Component {
 
     getTakeoff50ft() {
         return this.prettify(
-            getTakeoffPerformance(
+            NormalTakeoff.getDistance(
                 this.state.pressureAltitude,
                 this.state.temperature,
                 this.state.weight,
@@ -76,13 +78,112 @@ class App extends React.Component {
     
     getTakeoffSpeed() {
         return this.prettify(
-            getTakeoffSpeed(
+            NormalTakeoff.getLiftoffSpeed(
                 this.state.weight));
     }  
     
     getTakeoffFiftyFootSpeed() {
         return this.prettify(
-            getTakeoffFiftyFootSpeed(
+            NormalTakeoff.getFiftyFootSpeed(
+                this.state.weight));
+    }
+
+    
+    getShortTakeoffGroundRoll() {
+        return this.prettify(
+            PerformanceTakeoff.getDistance(
+                this.state.pressureAltitude,
+                this.state.temperature,
+                this.state.weight,
+                this.state.wind,
+                /* obstacle= */ 0));
+    }
+
+    getShortTakeoff50ft() {
+        return this.prettify(
+            PerformanceTakeoff.getDistance(
+                this.state.pressureAltitude,
+                this.state.temperature,
+                this.state.weight,
+                this.state.wind,
+                /* obstacle= */ 1));
+    }
+    
+    getShortTakeoffSpeed() {
+        return this.prettify(
+            PerformanceTakeoff.getLiftoffSpeed(
+                this.state.weight));
+    }  
+    
+    getShortTakeoffFiftyFootSpeed() {
+        return this.prettify(
+            PerformanceTakeoff.getFiftyFootSpeed(
+                this.state.weight));
+    }
+    
+    getLandingGroundRoll() {
+        return this.prettify(
+            NormalLanding.getDistance(
+                this.state.pressureAltitude,
+                this.state.temperature,
+                this.state.weight,
+                this.state.wind,
+                /* obstacle= */ 0));
+    }
+    
+    getLanding50ft() {
+        return this.prettify(
+            NormalLanding.getDistance(
+                this.state.pressureAltitude,
+                this.state.temperature,
+                this.state.weight,
+                this.state.wind,
+                /* obstacle= */ 1));
+    }
+    
+    getLandingSpeed() {
+        return this.prettify(
+           NormalLanding.getApproachSpeed(
+               this.state.weight));
+    }
+    
+    getShortLandingGroundRoll() {
+        return this.prettify(
+            PerformanceLanding.getDistance(
+                this.state.pressureAltitude,
+                this.state.temperature,
+                this.state.weight,
+                this.state.wind,
+                /* obstacle= */ 0));
+    }
+    
+    getShortLanding50ft() {
+        return this.prettify(
+            PerformanceLanding.getDistance(
+                this.state.pressureAltitude,
+                this.state.temperature,
+                this.state.weight,
+                this.state.wind,
+                /* obstacle= */ 1));
+    }
+    
+    getShortLandingSpeed() {
+        return this.prettify(
+           PerformanceLanding.getApproachSpeed(
+               this.state.weight));
+    }
+    
+    getVy() {
+        return this.prettify(
+            Climb.getVy(
+                this.state.weight, this.state.pressureAltitude));
+    }
+    
+    getRateOfClimb() {
+        return this.prettify(
+            Climb.getRate(
+                this.state.pressureAltitude,
+                this.state.temperature,
                 this.state.weight));
     }
     
@@ -116,7 +217,7 @@ class App extends React.Component {
               </section>
               
               <section className="subheader">
-                <p>Takeoff</p>
+                <p>Normal Takeoff</p>
               </section>
               
               <section className="output">
@@ -128,6 +229,63 @@ class App extends React.Component {
                 <p>Takeoff speed (kts)</p><p>{this.getTakeoffSpeed()}</p>
                 <p>50 foot speed (kts)</p><p>{this.getTakeoffFiftyFootSpeed()}</p>
               </section>
+
+              <section className="subheader">
+                <p>High Performance Takeoff</p>
+              </section>
+              
+              <section className="output">
+                <p>Ground roll (ft)</p><p>{this.getShortTakeoffGroundRoll()}</p>
+                <p>50 ft obstacle (ft)</p><p>{this.getShortTakeoff50ft()}</p>
+              </section>
+
+              <section className="output">
+                <p>Takeoff speed (kts)</p><p>{this.getShortTakeoffSpeed()}</p>
+                <p>50 foot speed (kts)</p><p>{this.getShortTakeoffFiftyFootSpeed()}</p>
+              </section>
+
+              <section className="subheader">
+                <p>Climb</p>
+              </section>
+                            
+              <section className="output">
+                <p>Vy (kts)</p><p>{this.getVy()}</p>
+                <p>Rate of climb (fpm)</p><p>{this.getRateOfClimb()}</p>
+              </section>
+              
+              <section className="explanation">
+                <p>
+                    Warning: climb performance is currently overestimated due to model limitations
+                </p>
+              </section>
+
+              <section className="subheader">
+                <p>Normal Landing</p>
+              </section>
+              
+              <section className="output">
+                <p>Ground roll (ft)</p><p>{this.getLandingGroundRoll()}</p>
+                <p>50 ft obstacle (ft)</p><p>{this.getLanding50ft()}</p>
+              </section>
+
+              <section className="output">
+                <p>Landing speed (kts)</p><p>{this.getLandingSpeed()}</p>
+              </section>
+              
+              
+              <section className="subheader">
+                <p>Performance Landing</p>
+              </section>
+              
+              <section className="output">
+                <p>Ground roll (ft)</p><p>{this.getShortLandingGroundRoll()}</p>
+                <p>50 ft obstacle (ft)</p><p>{this.getShortLanding50ft()}</p>
+              </section>
+
+              <section className="output">
+                <p>Landing speed (kts)</p><p>{this.getShortLandingSpeed()}</p>
+              </section>
+
             </div>
         );
     }
