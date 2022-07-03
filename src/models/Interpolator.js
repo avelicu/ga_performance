@@ -46,16 +46,16 @@ function interpolate(data, x) {
  // If x is outside the bounds of the keys, returns `null`.
  function _interpolate(data, x, value_getter) {
      var keys = new Int32Array(data).sort(); 
-     console.log(".interpolating x=" + x + " within " + keys);
+     // console.log(".interpolating x=" + x + " within " + keys);
 
      var key_index = find_key_index(keys, x);
      if (key_index < 0 || key_index >= keys.length) {
-         console.log("..key search out of bounds (result " + key_index + ")");
+         // console.log("..key search out of bounds (result " + key_index + ")");
          return null;
      }
      var x1 = keys[key_index];
      var y1 = value_getter(x1);
-     console.log("..found x1=" + x1 + " y1=" + y1);
+     // console.log("..found x1=" + x1 + " y1=" + y1);
           
      if (key_index == keys.length - 1) {
          if (x1 != keys[keys.length - 1]) {
@@ -63,18 +63,18 @@ function interpolate(data, x) {
              return null;
          }
          
-         console.log("..edge of graph, only y1 needed => " + y1);
+         // console.log("..edge of graph, only y1 needed => " + y1);
          return y1;
      }
      
      if (x1 == x) {
-         console.log("..exactly sought x, only y1 needed => " + y1);
+         // console.log("..exactly sought x, only y1 needed => " + y1);
          return y1;
      }
      
      var x2 = keys[key_index+1];
      var y2 = value_getter(x2);
-     console.log("..found x2=" + x2 + " y2=" + y2);
+     // console.log("..found x2=" + x2 + " y2=" + y2);
      
      if (x > x2 || x < x1) {
         console.log("..SHOULD NEVER HAPPEN: linear interpolation out of bounds");
@@ -82,12 +82,12 @@ function interpolate(data, x) {
      }
      
      if (y1 == null || y2 == null) {
-         console.log(".. result => null");
+         // console.log(".. result => null");
          return null;
      }
      
      var result = y1 + (y2 - y1)*(x-x1)/(x2-x1);
-     console.log("..result => " + result);
+     // console.log("..result => " + result);
      return result;
  }
  

@@ -15,6 +15,14 @@ const NavSection = ({ visible, children }) => {
     }
 }
 
+const InputWithSlider = ({ label, getter, setter, min, max, step, className }) => {
+    return [
+        <p className={className}>{label}</p>,
+        <p className={className}><input type="range" min={min} max={max} step={step} value={getter} onChange={setter} /></p>,
+        <p className={className}><input type="text" inputMode="numeric" value={getter} onChange={setter} /></p>,
+    ]
+}
+
 class App extends React.Component {
 
     constructor() {
@@ -23,6 +31,14 @@ class App extends React.Component {
             emptyWeight: 1860,
             maxGrossWeight: 2740,
             weight: 2500,
+            
+            subweights: false,
+            subWeightPilot: 190,
+            subWeightCopilot: 0,
+            subWeightPassenger1: 0,
+            subWeightPassenger2: 0,
+            subWeightCargo: 30,
+            subWeightFuel: 64,
             
             indicatedAltitude: 0,
             altimeterSetting: 29.92,
@@ -42,6 +58,13 @@ class App extends React.Component {
         this.setWind = this.setWind.bind(this);
         this.setRpm = this.setRpm.bind(this);
         this.setMp = this.setMp.bind(this);
+        this.toggleSubweights = this.toggleSubweights.bind(this);
+        this.setSubweightPilot = this.setSubweightPilot.bind(this);
+        this.setSubweightCopilot = this.setSubweightCopilot.bind(this);
+        this.setSubweightPassenger1 = this.setSubweightPassenger1.bind(this);
+        this.setSubweightPassenger2 = this.setSubweightPassenger2.bind(this);
+        this.setSubweightCargo = this.setSubweightCargo.bind(this);
+        this.setSubweightFuel = this.setSubweightFuel.bind(this);
     }
     
     setWeight(event) {
@@ -76,6 +99,56 @@ class App extends React.Component {
         this.setState({tab: tab});
     }
     
+    toggleSubweights(event) {
+        this.setState({subweights: !this.state.subweights});
+    }
+    
+    setSubweightPilot(event) {
+        this.setState({subWeightPilot: event.target.value});
+        this.updateTotalWeightFromSubweights();
+    }
+    
+    setSubweightCopilot(event) {
+        this.setState({subWeightCopilot: event.target.value});
+        this.updateTotalWeightFromSubweights();
+    }
+    
+    setSubweightPassenger1(event) {
+        this.setState({subWeightPassenger1: event.target.value});
+        this.updateTotalWeightFromSubweights();
+    }
+    
+    setSubweightPassenger2(event) {
+        this.setState({subWeightPassenger2: event.target.value});
+        this.updateTotalWeightFromSubweights();
+    }
+
+    setSubweightCargo(event) {
+        this.setState({subWeightCargo: event.target.value});
+        this.updateTotalWeightFromSubweights();
+    }
+
+    setSubweightFuel(event) {
+        this.setState({subWeightFuel: event.target.value});
+        this.updateTotalWeightFromSubweights();
+    }
+    
+    updateTotalWeightFromSubweights() {
+        this.setState((state) => {
+            return {
+                weight:
+                    Number(state.emptyWeight)
+                    + Number(state.subWeightPilot)
+                    + Number(state.subWeightCopilot)
+                    + Number(state.subWeightPassenger1)
+                    + Number(state.subWeightPassenger2)
+                    + Number(state.subWeightCargo)
+                    + 6 * Number(state.subWeightFuel)
+                }
+            }
+        );
+    }
+
     getPressureAltitude() {
         // JS is weird, we need the first + to cast to an int, otherwise second + will concatenate strings..
         return Math.round(+this.state.indicatedAltitude + (29.92 - this.state.altimeterSetting) * 1000);
@@ -278,9 +351,18 @@ class App extends React.Component {
               
               <section className="input">
                 <NavSection visible={tabsMatch(["departure", "cruise", "approach"])}>
-                    <p>Weight (lbs): 0+{this.getAboveEmptyWeight()}</p>
+                    <p onClick={this.toggleSubweights}>Weight (lbs): 0+{this.getAboveEmptyWeight()} ℹ️</p>
                     <p><input type="range" min={this.state.emptyWeight} max="2740" step="10" value={this.state.weight} onChange={this.setWeight} /></p>
                     <p><input type="text" inputMode="numeric" value={this.state.weight} onChange={this.setWeight} /></p>
+                    
+                    <NavSection visible={this.state.subweights}>
+                        <InputWithSlider className="subsection" label="Pilot" getter={this.state.subWeightPilot} setter={this.setSubweightPilot} min="0" max="400" step="10" />
+                        <InputWithSlider className="subsection" label="Copilot" getter={this.state.subWeightCopilot} setter={this.setSubweightCopilot} min="0" max="400" step="10" />
+                        <InputWithSlider className="subsection" label="Passenger 1" getter={this.state.subWeightPassenger1} setter={this.setSubweightPassenger1} min="0" max="400" step="10" />
+                        <InputWithSlider className="subsection" label="Passenger 2" getter={this.state.subWeightPassenger2} setter={this.setSubweightPassenger2} min="0" max="400" step="10" />
+                        <InputWithSlider className="subsection" label="Cargo" getter={this.state.subWeightCargo} setter={this.setSubweightCargo} min="0" max="400" step="10" />
+                        <InputWithSlider className="subsection" label="Fuel (gals)" getter={this.state.subWeightFuel} setter={this.setSubweightFuel} min="0" max="64" step="1" />
+                    </NavSection>
                     
                     <p>Indicated Altitude (feet): (PA: {this.getPressureAltitude()})</p>
                     <p><input type="range" min="0" max="16000" step="500" value={this.state.indicatedAltitude} onChange={this.setIndicatedAltitude} /></p>                

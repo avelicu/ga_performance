@@ -100,7 +100,7 @@ class Cruise {
     static getBhp(pa, rpm, mp, oat) {
         var stdtemp = interpolate(this._stdtemp, pa);
         var mpcorrection = (oat-stdtemp)*4/10; // 0.4" per 10 degrees difference
-        console.log("mp correction: " + mpcorrection);
+        // console.log("mp correction: " + mpcorrection);
         
         // subtract the mp correction to look in the tables for the uncorrected mp
         return interpolate3d(

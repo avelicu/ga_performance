@@ -4,10 +4,8 @@
 }
 
 p {
-	margin-block-start: 8px;
-	margin-block-end: 8px;
-	margin-inline-start: 8px;
-	margin-inline-end: 8px;
+    margin: 0;
+    padding: 8px;
     vertical-align: middle;
     text-align: center;
     font-size: small;
@@ -63,6 +61,11 @@ input {
   grid-template-columns: 1fr 2fr 1fr;
   color: white;
   padding: 0px;
+}
+
+.input .subsection {
+  background-color: #4b525e;
+  margin: 0;
 }
 
 .explanation {
