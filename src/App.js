@@ -5,6 +5,7 @@ import './App.css';
 import { NormalTakeoff, PerformanceTakeoff } from './models/Takeoff.js';
 import { NormalLanding, PerformanceLanding } from './models/Landing.js';
 import { Climb } from './models/Climb.js';
+import { Cruise } from './models/Cruise.js';
 
 class App extends React.Component {
     constructor() {
@@ -17,11 +18,16 @@ class App extends React.Component {
             pressureAltitude: 0,
             temperature: 0,
             wind: 0,
+            
+            rpm: 2600,
+            mp: 21.7,
         }
         this.setWeight = this.setWeight.bind(this);
         this.setPressureAltitude = this.setPressureAltitude.bind(this);
         this.setTemperature = this.setTemperature.bind(this);
         this.setWind = this.setWind.bind(this);
+        this.setRpm = this.setRpm.bind(this);
+        this.setMp = this.setMp.bind(this);
     }
     
     setWeight(event) {
@@ -38,6 +44,14 @@ class App extends React.Component {
     
     setWind(event) {
         this.setState({wind: event.target.value});
+    }
+    
+    setRpm(event) {
+        this.setState({rpm: event.target.value});
+    }
+    
+    setMp(event) {
+        this.setState({mp: event.target.value});
     }
     
     getAboveEmptyWeight() {
@@ -187,6 +201,25 @@ class App extends React.Component {
                 this.state.weight));
     }
     
+    getPercentPower() {
+        return this.prettify(
+            Cruise.getPercentPower(
+                this.state.pressureAltitude,
+                this.state.rpm,
+                Math.trunc(this.state.mp*10),
+                this.state.temperature));
+    }
+    
+    getTrueAirspeed() {
+        return this.prettify(
+            Cruise.getTrueAirspeed(
+                this.state.pressureAltitude,
+                this.state.rpm,
+                Math.trunc(this.state.mp*10),
+                this.state.temperature,
+                this.state.weight));
+    }
+    
     render() {
         return (
             <div className="App">
@@ -215,7 +248,7 @@ class App extends React.Component {
                 <p>Wind (kts):</p>
                 <p><input type="text" inputMode="numeric" value={this.state.wind} onChange={this.setWind} /></p>
               </section>
-              
+
               <section className="subheader">
                 <p>Normal Takeoff</p>
               </section>
@@ -260,6 +293,29 @@ class App extends React.Component {
               </section>
 
               <section className="subheader">
+                <p>Cruise</p>
+              </section>
+              
+              <section className="input">
+                <p>RPM:</p>
+                <p><input type="text" inputMode="numeric" value={this.state.rpm} onChange={this.setRpm} /></p>
+              </section>
+              
+              <section className="input">
+                <p>MP:</p>
+                <p><input type="text" inputMode="numeric" value={this.state.mp} onChange={this.setMp} /></p>
+              </section>
+          
+
+              <section className="output">
+                <p>Power</p><p>{this.getPercentPower()}%</p>
+              </section>
+
+              <section className="output">
+                <p>TAS</p><p>{this.getTrueAirspeed()}</p>
+              </section>
+
+              <section className="subheader">
                 <p>Normal Landing</p>
               </section>
               
@@ -285,7 +341,6 @@ class App extends React.Component {
               <section className="output">
                 <p>Landing speed (kts)</p><p>{this.getShortLandingSpeed()}</p>
               </section>
-
             </div>
         );
     }

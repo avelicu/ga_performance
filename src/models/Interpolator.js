@@ -1,3 +1,14 @@
+function interpolate3d(data, key, x, y) {
+    if (key == null || x == null || y == null) {
+        return null;
+    }
+    
+    return _interpolate(
+        Object.keys(data),
+        key,
+        i => interpolate2d(data[i], x, y));
+}
+
 function interpolate2d(data, key, x) {
      if (key == null || x == null) {
          return null;
@@ -56,6 +67,11 @@ function interpolate(data, x) {
          return y1;
      }
      
+     if (x1 == x) {
+         console.log("..exactly sought x, only y1 needed => " + y1);
+         return y1;
+     }
+     
      var x2 = keys[key_index+1];
      var y2 = value_getter(x2);
      console.log("..found x2=" + x2 + " y2=" + y2);
@@ -63,6 +79,11 @@ function interpolate(data, x) {
      if (x > x2 || x < x1) {
         console.log("..SHOULD NEVER HAPPEN: linear interpolation out of bounds");
         return null;
+     }
+     
+     if (y1 == null || y2 == null) {
+         console.log(".. result => null");
+         return null;
      }
      
      var result = y1 + (y2 - y1)*(x-x1)/(x2-x1);
@@ -85,4 +106,4 @@ function find_key_index(keys, key) {
     return keys.length; // Out of bounds
 }
  
-export { interpolate2d, interpolate };
+export { interpolate3d, interpolate2d, interpolate };
