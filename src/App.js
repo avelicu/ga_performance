@@ -162,12 +162,12 @@ class App extends React.Component {
         return this.state.maxGrossWeight - this.state.weight; 
     }
     
-    prettify(num) {
+    prettify(num, decimals=0) {
         if (num == null) {
             return "⚠";
         }
         
-        return Math.trunc(num);
+        return Number(num).toFixed(decimals);
     }
     
     getTakeoffGroundRoll() {
@@ -319,6 +319,16 @@ class App extends React.Component {
                 this.state.temperature,
                 this.state.weight));
     }
+    
+    getFuelFlow() {
+        return this.prettify(
+            Cruise.getFuelFlow(
+                this.getPressureAltitude(),
+                this.state.rpm,
+                Math.trunc(this.state.mp*10),
+                this.state.temperature),
+            1);
+    }
 
     render() {
         const _NavButton = ({ tab, children }) => {
@@ -436,6 +446,7 @@ class App extends React.Component {
                   <section className="cruise_output">
                     <p>Power</p><p>{this.getPercentPower()}%</p>
                     <p>True Airspeed (kts)</p><p>{this.getTrueAirspeed()}</p>
+                    <p>Fuel Flow<br />100 ROP (gph)</p><p>{this.getFuelFlow()}</p>
                   </section>
               </NavSection>
 

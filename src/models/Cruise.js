@@ -97,6 +97,15 @@ class Cruise {
         },
     }
     
+    static _bhp_rpm_fuelflow = {
+        150: { 2700: 12.5, 2600: 12.3, 2400: 12.0 },
+        140: { 2700: 11.9, 2600: 11.7, 2400: 11.3 },
+        130: { 2700: 11.2, 2600: 11.0, 2400: 10.5 },
+        120: { 2700: 10.7, 2600: 10.4, 2400: 10.0, 2200: 9.8 },
+        110: { 2700: 10.0, 2600:  9.8, 2400:  9.4, 2200: 9.2 },
+         90: { 2700:  8.9, 2600:  8.6, 2400:  8.3, 2200: 8.0, 2000: 7.7 },
+    }
+    
     static getBhp(pa, rpm, mp, oat) {
         var stdtemp = interpolate(this._stdtemp, pa);
         var mpcorrection = (oat-stdtemp)*4/10; // 0.4" per 10 degrees difference
@@ -115,6 +124,17 @@ class Cruise {
         }
         
         return (bhp / 200.0)*100;
+    }
+    
+    static getFuelFlow(pa, rpm, mp, oat) {
+        var bhp = this.getBhp(pa, rpm, mp, oat);
+        if (bhp == null) {
+            return null;
+        }
+        
+        return interpolate2d(
+            this._bhp_rpm_fuelflow,
+            bhp, rpm);
     }
     
     static getTrueAirspeed(pa, rpm, mp, oat, weight) {
