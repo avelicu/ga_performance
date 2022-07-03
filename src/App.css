@@ -8,13 +8,16 @@ p {
 	margin-block-end: 8px;
 	margin-inline-start: 8px;
 	margin-inline-end: 8px;
+    vertical-align: middle;
+    text-align: center;
+    font-size: small;
 }
 
 input {
 	background-color: inherit;
 	color: white;
-	text-align: center;
-	width: 100px;
+    width: 90%;
+    text-align: center;
 	
 	padding: 3px;
 	border: 1px solid #eee;
@@ -56,18 +59,8 @@ input {
 
 .input {
   background-color: #282c34;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  color: white;
-  padding: 0px;
-}
-
-.output {
-  background-color: #282c34;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
   color: white;
   padding: 0px;
 }
@@ -79,6 +72,46 @@ input {
   font-size: 10px;
   text-align: center;
   font-style: italic;
+}
+
+.input .explanation {
+  grid-column-start: span 3;
+}
+
+.takeoff_output {
+  background-color: #282c34;
+  display: grid;
+  grid-template-columns: 2fr 1fr 2fr 1fr;
+  color: white;
+  padding: 0px;
+}
+
+.climb_output {
+  background-color: #282c34;
+  display: grid;
+  grid-template-columns: 2fr 1fr 2fr 1fr;
+  color: white;
+  padding: 0px;
+}
+
+.climb_output .explanation {
+    grid-column-start: span 4;
+}
+
+.cruise_output {
+  background-color: #282c34;
+  display: grid;
+  grid-template-columns: 2fr 1fr 2fr 1fr;
+  color: white;
+  padding: 0px; 
+}
+
+.landing_output {
+  background-color: #282c34;
+  display: grid;
+  grid-template-columns: 2fr 1fr 2fr 1fr;
+  color: white;
+  padding: 0px;
 }
 
 .App-link {

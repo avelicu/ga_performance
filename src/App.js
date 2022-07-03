@@ -64,7 +64,7 @@ class App extends React.Component {
     
     prettify(num) {
         if (num == null) {
-            return "<invalid>";
+            return "⚠";
         }
         
         return Math.trunc(num);
@@ -227,119 +227,89 @@ class App extends React.Component {
                 <p>M20J Performance Calculator</p>
                 <img className="App-logo" src="logo192.png" />
               </header>
+              
               <section className="input">
-                <p>Weight (lbs):</p>
+                <p>Weight (lbs): 0+{this.getAboveEmptyWeight()}</p>
+                <p><input type="range" min={this.state.emptyWeight} max="2740" step="10" value={this.state.weight} onChange={this.setWeight} /></p>
                 <p><input type="text" inputMode="numeric" value={this.state.weight} onChange={this.setWeight} /></p>
-              </section>
-              <section className="explanation">
-                <p>
-                    {this.getAboveEmptyWeight()} lbs above empty, {this.getBelowMaxGrossWeight()} lbs below max gross
-                </p>
-              </section>
-              <section className="input">
                 <p>Pressure Altitude (feet):</p>
+                <p><input type="range" min="0" max="16000" step="500" value={this.state.pressureAltitude} onChange={this.setPressureAltitude} /></p>                
                 <p><input type="text" inputMode="numeric" value={this.state.pressureAltitude} onChange={this.setPressureAltitude} /></p>
-              </section>
-              <section className="input">
                 <p>Temperature (&deg;C):</p>
+                <p><input type="range" min="-40" max="60" step="1" value={this.state.temperature} onChange={this.setTemperature} /></p>
                 <p><input type="text" inputMode="numeric" value={this.state.temperature} onChange={this.setTemperature} /></p>
-              </section>
-              <section className="input">
-                <p>Wind (kts):</p>
+                <p>Headwind (kts):</p>
+                <p><input type="range" min="-10" max="20" step="1" value={this.state.wind} onChange={this.setWind} /></p>
                 <p><input type="text" inputMode="numeric" value={this.state.wind} onChange={this.setWind} /></p>
+                <p>RPM:</p>
+                <p><input type="range" min="2000" max="2700" step="100" value={this.state.rpm} onChange={this.setRpm} /></p>
+                <p><input type="text" inputMode="numeric" value={this.state.rpm} onChange={this.setRpm} /></p>
+                <p>MP:</p>
+                <p><input type="range" min="14.7" max="27.0" step=".1" value={this.state.mp} onChange={this.setMp} /></p>
+                <p><input type="text" inputMode="numeric" value={this.state.mp} onChange={this.setMp} /></p>
               </section>
 
               <section className="subheader">
                 <p>Normal Takeoff</p>
               </section>
               
-              <section className="output">
-                <p>Ground roll (ft)</p><p>{this.getTakeoffGroundRoll()}</p>
-                <p>50 ft obstacle (ft)</p><p>{this.getTakeoff50ft()}</p>
-              </section>
-
-              <section className="output">
+              <section className="takeoff_output">
                 <p>Takeoff speed (kts)</p><p>{this.getTakeoffSpeed()}</p>
+                <p>Ground roll (ft)</p><p>{this.getTakeoffGroundRoll()}</p>
                 <p>50 foot speed (kts)</p><p>{this.getTakeoffFiftyFootSpeed()}</p>
+                <p>50 ft obstacle (ft)</p><p>{this.getTakeoff50ft()}</p>
               </section>
 
               <section className="subheader">
                 <p>High Performance Takeoff</p>
               </section>
               
-              <section className="output">
-                <p>Ground roll (ft)</p><p>{this.getShortTakeoffGroundRoll()}</p>
-                <p>50 ft obstacle (ft)</p><p>{this.getShortTakeoff50ft()}</p>
-              </section>
-
-              <section className="output">
+              <section className="takeoff_output">
                 <p>Takeoff speed (kts)</p><p>{this.getShortTakeoffSpeed()}</p>
+                <p>Ground roll (ft)</p><p>{this.getShortTakeoffGroundRoll()}</p>
                 <p>50 foot speed (kts)</p><p>{this.getShortTakeoffFiftyFootSpeed()}</p>
+                <p>50 ft obstacle (ft)</p><p>{this.getShortTakeoff50ft()}</p>
               </section>
 
               <section className="subheader">
                 <p>Climb</p>
               </section>
                             
-              <section className="output">
+              <section className="climb_output">
                 <p>Vy (kts)</p><p>{this.getVy()}</p>
                 <p>Rate of climb (fpm)</p><p>{this.getRateOfClimb()}</p>
-              </section>
-              
-              <section className="explanation">
-                <p>
-                    Warning: climb performance is currently overestimated due to model limitations
-                </p>
+                <p class="explanation">Warning: climb performance is currently overestimated due to model limitations</p>                
               </section>
 
               <section className="subheader">
                 <p>Cruise</p>
               </section>
-              
-              <section className="input">
-                <p>RPM:</p>
-                <p><input type="text" inputMode="numeric" value={this.state.rpm} onChange={this.setRpm} /></p>
-              </section>
-              
-              <section className="input">
-                <p>MP:</p>
-                <p><input type="text" inputMode="numeric" value={this.state.mp} onChange={this.setMp} /></p>
-              </section>
-          
 
-              <section className="output">
+              <section className="cruise_output">
                 <p>Power</p><p>{this.getPercentPower()}%</p>
-              </section>
-
-              <section className="output">
-                <p>TAS</p><p>{this.getTrueAirspeed()}</p>
+                <p>True Airspeed (kts)</p><p>{this.getTrueAirspeed()}</p>
               </section>
 
               <section className="subheader">
                 <p>Normal Landing</p>
               </section>
               
-              <section className="output">
+              <section className="landing_output">
+                <p>Landing speed (kts)</p><p>{this.getLandingSpeed()}</p>
+                <p></p><p></p>
                 <p>Ground roll (ft)</p><p>{this.getLandingGroundRoll()}</p>
                 <p>50 ft obstacle (ft)</p><p>{this.getLanding50ft()}</p>
-              </section>
-
-              <section className="output">
-                <p>Landing speed (kts)</p><p>{this.getLandingSpeed()}</p>
-              </section>
-              
+              </section>             
               
               <section className="subheader">
                 <p>Performance Landing</p>
               </section>
               
-              <section className="output">
+              <section className="landing_output">
+                <p>Landing speed (kts)</p><p>{this.getShortLandingSpeed()}</p>
+                <p></p><p></p>
                 <p>Ground roll (ft)</p><p>{this.getShortLandingGroundRoll()}</p>
                 <p>50 ft obstacle (ft)</p><p>{this.getShortLanding50ft()}</p>
-              </section>
-
-              <section className="output">
-                <p>Landing speed (kts)</p><p>{this.getShortLandingSpeed()}</p>
               </section>
             </div>
         );
