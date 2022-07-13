@@ -64,6 +64,10 @@ input {
   padding: 0px;
 }
 
+input[type=range] {
+    touch-action: none;
+}
+
 .input .subsection {
   background-color: #4b525e;
   margin: 0;
