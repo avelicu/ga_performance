@@ -1,6 +1,7 @@
 .App {
   display: flex;
   flex-direction: column;
+  padding-bottom: 70px;
 }
 
 p {
