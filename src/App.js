@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import logo from './logo.svg';
 import './App.css';
 
@@ -18,464 +18,255 @@ const NavSection = ({ visible, children }) => {
 const InputWithSlider = ({ label, getter, setter, min, max, step, className }) => {
     return [
         <p className={className}>{label}</p>,
-        <p className={className}><input type="range" min={min} max={max} step={step} value={getter} onChange={setter} /></p>,
-        <p className={className}><input type="text" inputMode="numeric" value={getter} onChange={setter} /></p>,
+        <p className={className}><input type="range" min={min} max={max} step={step} value={getter} onChange={e => setter(Number(e.target.value))} /></p>,
+        <p className={className}><input type="text" inputMode="numeric" value={getter} onChange={e => setter(Number(e.target.value))} /></p>,
     ]
 }
 
-class App extends React.Component {
+const Prettified = ({ value, decimals=0 }) => {
+    if (value == null) {
+        return <p className="invalid">⚠</p>
+    } else {
+        return <p>{Number(value).toFixed(decimals)}</p>
+    }
+}
 
-    constructor() {
-        super();
-        this.state = {
-            emptyWeight: 1860,
-            maxGrossWeight: 2740,
-            weight: 2500,
-            
-            subweights: false,
-            subWeightPilot: 190,
-            subWeightCopilot: 0,
-            subWeightPassenger1: 0,
-            subWeightPassenger2: 0,
-            subWeightCargo: 30,
-            subWeightFuel: 64,
-            
-            indicatedAltitude: 0,
-            altimeterSetting: 29.92,
-            
-            temperature: 0,
-            wind: 0,
-            
-            rpm: 2600,
-            mp: 21.7,
-            
-            tab: '',
-        }
-        this.setWeight = this.setWeight.bind(this);
-        this.setIndicatedAltitude = this.setIndicatedAltitude.bind(this);
-        this.setAltimeterSetting = this.setAltimeterSetting.bind(this);
-        this.setTemperature = this.setTemperature.bind(this);
-        this.setWind = this.setWind.bind(this);
-        this.setRpm = this.setRpm.bind(this);
-        this.setMp = this.setMp.bind(this);
-        this.toggleSubweights = this.toggleSubweights.bind(this);
-        this.setSubweightPilot = this.setSubweightPilot.bind(this);
-        this.setSubweightCopilot = this.setSubweightCopilot.bind(this);
-        this.setSubweightPassenger1 = this.setSubweightPassenger1.bind(this);
-        this.setSubweightPassenger2 = this.setSubweightPassenger2.bind(this);
-        this.setSubweightCargo = this.setSubweightCargo.bind(this);
-        this.setSubweightFuel = this.setSubweightFuel.bind(this);
-    }
-    
-    setWeight(event) {
-        this.setState({weight: event.target.value});
-    }
+const App = () => {
 
-    setIndicatedAltitude(event) {
-        this.setState({indicatedAltitude: event.target.value});
-    }
+    const [emptyWeight, setEmptyWeight] = useState(1860);
+    const [maxGrossWeight, setMaxGrossWeight] = useState(1860);
+    
+    const [weight, setWeight] = useState(2500);
+    
+    const [subweights, setSubweights] = useState(false);
+    const [subWeightPilot, setSubweightPilot] = useState(190);
+    const [subWeightCopilot, setSubweightCopilot] = useState(0);
+    const [subWeightPassenger1, setSubweightPassenger1] = useState(0);
+    const [subWeightPassenger2, setSubweightPassenger2] = useState(0);
+    const [subWeightCargo, setSubweightCargo] = useState(30);
+    const [subWeightFuel, setSubweightFuel] = useState(64);
+    
+    const [indicatedAltitude, setIndicatedAltitude] = useState(0);
+    const [altimeterSetting, setAltimeterSetting] = useState(29.92);
+    
+    const [temperature, setTemperature] = useState(0);
+    const [wind, setWind] = useState(0);
+    
+    const [rpm, setRpm] = useState(2600);
+    const [mp, setMp] = useState(21.7);
+    
+    const [currentTab, setCurrentTab] = useState('');
+    
+    useEffect(() => {
+        setWeight(
+            emptyWeight
+            + subWeightPilot
+            + subWeightCopilot
+            + subWeightPassenger1
+            + subWeightPassenger2
+            + subWeightCargo
+            + 6 * subWeightFuel);
+    }, [
+        emptyWeight,
+        subWeightPilot,
+        subWeightCopilot,
+        subWeightPassenger1,
+        subWeightPassenger2,
+        subWeightCargo,
+        subWeightFuel]);
 
-    setAltimeterSetting(event) {
-        this.setState({altimeterSetting: event.target.value});
-    }    
-
-    setTemperature(event) {
-        this.setState({temperature: event.target.value});
-    }
-    
-    setWind(event) {
-        this.setState({wind: event.target.value});
-    }
-    
-    setRpm(event) {
-        this.setState({rpm: event.target.value});
-    }
-    
-    setMp(event) {
-        this.setState({mp: event.target.value});
-    }
-    
-    setTab(tab) {
-        this.setState({tab: tab});
-    }
-    
-    toggleSubweights(event) {
-        this.setState({subweights: !this.state.subweights});
-    }
-    
-    setSubweightPilot(event) {
-        this.setState({subWeightPilot: event.target.value});
-        this.updateTotalWeightFromSubweights();
-    }
-    
-    setSubweightCopilot(event) {
-        this.setState({subWeightCopilot: event.target.value});
-        this.updateTotalWeightFromSubweights();
-    }
-    
-    setSubweightPassenger1(event) {
-        this.setState({subWeightPassenger1: event.target.value});
-        this.updateTotalWeightFromSubweights();
-    }
-    
-    setSubweightPassenger2(event) {
-        this.setState({subWeightPassenger2: event.target.value});
-        this.updateTotalWeightFromSubweights();
-    }
-
-    setSubweightCargo(event) {
-        this.setState({subWeightCargo: event.target.value});
-        this.updateTotalWeightFromSubweights();
-    }
-
-    setSubweightFuel(event) {
-        this.setState({subWeightFuel: event.target.value});
-        this.updateTotalWeightFromSubweights();
-    }
-    
-    updateTotalWeightFromSubweights() {
-        this.setState((state) => {
-            return {
-                weight:
-                    Number(state.emptyWeight)
-                    + Number(state.subWeightPilot)
-                    + Number(state.subWeightCopilot)
-                    + Number(state.subWeightPassenger1)
-                    + Number(state.subWeightPassenger2)
-                    + Number(state.subWeightCargo)
-                    + 6 * Number(state.subWeightFuel)
-                }
-            }
-        );
-    }
-
-    getPressureAltitude() {
+    const getPressureAltitude = () => {
+        return Math.round(+indicatedAltitude + (29.92 - altimeterSetting) * 1000);
         // JS is weird, we need the first + to cast to an int, otherwise second + will concatenate strings..
-        return Math.round(+this.state.indicatedAltitude + (29.92 - this.state.altimeterSetting) * 1000);
     }
     
-    getAboveEmptyWeight() {
-        return this.state.weight - this.state.emptyWeight; 
-    }
-
-    getBelowMaxGrossWeight() {
-        return this.state.maxGrossWeight - this.state.weight; 
-    }
-    
-    prettify(num, decimals=0) {
-        if (num == null) {
-            return "⚠";
+    const NavButton = ({ tab, children }) => {
+        if (tab == currentTab) {
+            return <p className="active">{children}</p>
+        } else {
+            return <p onClick={() => setCurrentTab(tab)}>{children}</p>
         }
-        
-        return Number(num).toFixed(decimals);
-    }
-    
-    getTakeoffGroundRoll() {
-        return this.prettify(
-            NormalTakeoff.getDistance(
-                this.getPressureAltitude(),
-                this.state.temperature,
-                this.state.weight,
-                this.state.wind,
-                /* obstacle= */ 0));
     }
 
-    getTakeoff50ft() {
-        return this.prettify(
-            NormalTakeoff.getDistance(
-                this.getPressureAltitude(),
-                this.state.temperature,
-                this.state.weight,
-                this.state.wind,
-                /* obstacle= */ 1));
-    }
-    
-    getTakeoffSpeed() {
-        return this.prettify(
-            NormalTakeoff.getLiftoffSpeed(
-                this.state.weight));
-    }  
-    
-    getTakeoffFiftyFootSpeed() {
-        return this.prettify(
-            NormalTakeoff.getFiftyFootSpeed(
-                this.state.weight));
+    const tabsMatch = (tabs) => {
+        return currentTab === '' || tabs.includes(currentTab);
     }
 
-    
-    getShortTakeoffGroundRoll() {
-        return this.prettify(
-            PerformanceTakeoff.getDistance(
-                this.getPressureAltitude(),
-                this.state.temperature,
-                this.state.weight,
-                this.state.wind,
-                /* obstacle= */ 0));
-    }
+    return (
+        <div className="App">
+            <div className="fixed-nav-bar">
+                <NavButton tab="">All</NavButton>
+                <NavButton tab="departure">Takeoff &amp; Climb</NavButton>
+                <NavButton tab="cruise">Cruise</NavButton>
+                <NavButton tab="approach">Approach &amp; Landing</NavButton>
+            </div>
 
-    getShortTakeoff50ft() {
-        return this.prettify(
-            PerformanceTakeoff.getDistance(
-                this.getPressureAltitude(),
-                this.state.temperature,
-                this.state.weight,
-                this.state.wind,
-                /* obstacle= */ 1));
-    }
-    
-    getShortTakeoffSpeed() {
-        return this.prettify(
-            PerformanceTakeoff.getLiftoffSpeed(
-                this.state.weight));
-    }  
-    
-    getShortTakeoffFiftyFootSpeed() {
-        return this.prettify(
-            PerformanceTakeoff.getFiftyFootSpeed(
-                this.state.weight));
-    }
-    
-    getLandingGroundRoll() {
-        return this.prettify(
-            NormalLanding.getDistance(
-                this.getPressureAltitude(),
-                this.state.temperature,
-                this.state.weight,
-                this.state.wind,
-                /* obstacle= */ 0));
-    }
-    
-    getLanding50ft() {
-        return this.prettify(
-            NormalLanding.getDistance(
-                this.getPressureAltitude(),
-                this.state.temperature,
-                this.state.weight,
-                this.state.wind,
-                /* obstacle= */ 1));
-    }
-    
-    getLandingSpeed() {
-        return this.prettify(
-           NormalLanding.getApproachSpeed(
-               this.state.weight));
-    }
-    
-    getShortLandingGroundRoll() {
-        return this.prettify(
-            PerformanceLanding.getDistance(
-                this.getPressureAltitude(),
-                this.state.temperature,
-                this.state.weight,
-                this.state.wind,
-                /* obstacle= */ 0));
-    }
-    
-    getShortLanding50ft() {
-        return this.prettify(
-            PerformanceLanding.getDistance(
-                this.getPressureAltitude(),
-                this.state.temperature,
-                this.state.weight,
-                this.state.wind,
-                /* obstacle= */ 1));
-    }
-    
-    getShortLandingSpeed() {
-        return this.prettify(
-           PerformanceLanding.getApproachSpeed(
-               this.state.weight));
-    }
-    
-    getVy() {
-        return this.prettify(
-            Climb.getVy(
-                this.state.weight, this.getPressureAltitude()));
-    }
-    
-    getRateOfClimb() {
-        return this.prettify(
-            Climb.getRate(
-                this.getPressureAltitude(),
-                this.state.temperature,
-                this.state.weight));
-    }
-    
-    getPercentPower() {
-        return this.prettify(
-            Cruise.getPercentPower(
-                this.getPressureAltitude(),
-                this.state.rpm,
-                Math.trunc(this.state.mp*10),
-                this.state.temperature));
-    }
-    
-    getTrueAirspeed() {
-        return this.prettify(
-            Cruise.getTrueAirspeed(
-                this.getPressureAltitude(),
-                this.state.rpm,
-                Math.trunc(this.state.mp*10),
-                this.state.temperature,
-                this.state.weight));
-    }
-    
-    getFuelFlow() {
-        return this.prettify(
-            Cruise.getFuelFlow(
-                this.getPressureAltitude(),
-                this.state.rpm,
-                Math.trunc(this.state.mp*10),
-                this.state.temperature),
-            1);
-    }
-
-    render() {
-        const _NavButton = ({ tab, children }) => {
-            if (tab == this.state.tab) {
-                return <p className="active">{children}</p>
-            } else {
-                return <p onClick={() => this.setTab(tab)}>{children}</p>
-            }
-        }
-        
-        const NavButton = _NavButton.bind(this);
-        
-        const tabsMatch = (tabs) => {
-            return this.state.tab === '' || tabs.includes(this.state.tab);
-        }
-        
-        return (
-            <div className="App">
-                <div className="fixed-nav-bar">
-                    <NavButton tab="">All</NavButton>
-                    <NavButton tab="departure">Takeoff &amp; Climb</NavButton>
-                    <NavButton tab="cruise">Cruise</NavButton>
-                    <NavButton tab="approach">Approach &amp; Landing</NavButton>
-                </div>
-
-              <header className="header">
-                <p>M20J Performance Calculator</p>
-                <img className="App-logo" src="logo192.png" />
-              </header>
-              
-              <section className="input">
-                <NavSection visible={tabsMatch(["departure", "cruise", "approach"])}>
-                    <p onClick={this.toggleSubweights}>Weight (lbs): 0+{this.getAboveEmptyWeight()} ℹ️</p>
-                    <p><input type="range" min={this.state.emptyWeight} max="2740" step="10" value={this.state.weight} onChange={this.setWeight} /></p>
-                    <p><input type="text" inputMode="numeric" value={this.state.weight} onChange={this.setWeight} /></p>
-                    
-                    <NavSection visible={this.state.subweights}>
-                        <InputWithSlider className="subsection" label="Pilot" getter={this.state.subWeightPilot} setter={this.setSubweightPilot} min="0" max="400" step="10" />
-                        <InputWithSlider className="subsection" label="Copilot" getter={this.state.subWeightCopilot} setter={this.setSubweightCopilot} min="0" max="400" step="10" />
-                        <InputWithSlider className="subsection" label="Passenger 1" getter={this.state.subWeightPassenger1} setter={this.setSubweightPassenger1} min="0" max="400" step="10" />
-                        <InputWithSlider className="subsection" label="Passenger 2" getter={this.state.subWeightPassenger2} setter={this.setSubweightPassenger2} min="0" max="400" step="10" />
-                        <InputWithSlider className="subsection" label="Cargo" getter={this.state.subWeightCargo} setter={this.setSubweightCargo} min="0" max="400" step="10" />
-                        <InputWithSlider className="subsection" label="Fuel (gals)" getter={this.state.subWeightFuel} setter={this.setSubweightFuel} min="0" max="64" step="1" />
-                    </NavSection>
-                    
-                    <p>Indicated Altitude (feet): (PA: {this.getPressureAltitude()})</p>
-                    <p><input type="range" min="0" max="16000" step="500" value={this.state.indicatedAltitude} onChange={this.setIndicatedAltitude} /></p>                
-                    <p><input type="text" inputMode="numeric" value={this.state.indicatedAltitude} onChange={this.setIndicatedAltitude} /></p>
-
-                    <p>Altimeter Setting (inHg):</p>
-                    <p><input type="range" min="28.1" max="31" step=".01" value={this.state.altimeterSetting} onChange={this.setAltimeterSetting} /></p>                
-                    <p><input type="text" inputMode="numeric" value={this.state.altimeterSetting} onChange={this.setAltimeterSetting} /></p>
-                    
-
-                    <p>Temperature (&deg;C):</p>
-                    <p><input type="range" min="-40" max="60" step="1" value={this.state.temperature} onChange={this.setTemperature} /></p>
-                    <p><input type="text" inputMode="numeric" value={this.state.temperature} onChange={this.setTemperature} /></p>
-                </NavSection>
-
-                <NavSection visible={tabsMatch(["departure", "approach"])}>
-                    <p>Headwind (kts):</p>
-                    <p><input type="range" min="-10" max="20" step="1" value={this.state.wind} onChange={this.setWind} /></p>
-                    <p><input type="text" inputMode="numeric" value={this.state.wind} onChange={this.setWind} /></p>
+          <header className="header">
+            <p>M20J Performance Calculator</p>
+            <img className="App-logo" src="logo192.png" />
+          </header>
+          
+          <section className="input">
+            <NavSection visible={tabsMatch(["departure", "cruise", "approach"])}>
+                <p onClick={() => setSubweights(!subweights)}>Weight (lbs): 0+{weight - emptyWeight} ℹ️</p>
+                <p><input type="range" min={emptyWeight} max="2740" step="10" value={weight} onChange={e => setWeight(Number(e.target.value))} /></p>
+                <p><input type="text" inputMode="numeric" value={weight} onChange={e => setWeight(Number(e.target.value))} /></p>
+                
+                <NavSection visible={subweights}>
+                    <InputWithSlider className="subsection" label="Pilot" getter={subWeightPilot} setter={setSubweightPilot} min="0" max="400" step="10" />
+                    <InputWithSlider className="subsection" label="Copilot" getter={subWeightCopilot} setter={setSubweightCopilot} min="0" max="400" step="10" />
+                    <InputWithSlider className="subsection" label="Passenger 1" getter={subWeightPassenger1} setter={setSubweightPassenger1} min="0" max="400" step="10" />
+                    <InputWithSlider className="subsection" label="Passenger 2" getter={subWeightPassenger2} setter={setSubweightPassenger2} min="0" max="400" step="10" />
+                    <InputWithSlider className="subsection" label="Cargo" getter={subWeightCargo} setter={setSubweightCargo} min="0" max="400" step="10" />
+                    <InputWithSlider className="subsection" label="Fuel (gals)" getter={subWeightFuel} setter={setSubweightFuel} min="0" max="64" step="1" />
                 </NavSection>
                 
-                <NavSection visible={tabsMatch(["cruise"])}>
-                    <p>RPM:</p>
-                    <p><input type="range" min="2000" max="2700" step="100" value={this.state.rpm} onChange={this.setRpm} /></p>
-                    <p><input type="text" inputMode="numeric" value={this.state.rpm} onChange={this.setRpm} /></p>
-                    <p>MP:</p>
-                    <p><input type="range" min="14.7" max="27.0" step=".1" value={this.state.mp} onChange={this.setMp} /></p>
-                    <p><input type="text" inputMode="numeric" value={this.state.mp} onChange={this.setMp} /></p>
-                </NavSection>
+                <InputWithSlider
+                    label={"Indicated Altitude(feet): (PA: " + getPressureAltitude() + ")"}
+                    getter={indicatedAltitude}
+                    setter={setIndicatedAltitude}
+                    min="0" max="16000" step="500" />
+
+                <InputWithSlider
+                    label="Altimeter Setting (inHg):"
+                    getter={altimeterSetting}
+                    setter={setAltimeterSetting}
+                    min="28.1" max="31" step=".01" />
+
+                <InputWithSlider
+                    label="Temperature (&deg;C)"
+                    getter={temperature}
+                    setter={setTemperature}
+                    min="-40" max="60" step="1" />
+            </NavSection>
+
+            <NavSection visible={tabsMatch(["departure", "approach"])}>
+                <InputWithSlider
+                    label="Headwind (kts)"
+                    getter={wind}
+                    setter={setWind}
+                    min="-10" max="20" step="1" />
+            </NavSection>
+            
+            <NavSection visible={tabsMatch(["cruise"])}>
+                <InputWithSlider
+                    label="RPM"
+                    getter={rpm}
+                    setter={setRpm}
+                    min="2000" max="2700" step="100" />
+                
+                <InputWithSlider
+                    label="MP"
+                    getter={mp}
+                    setter={setMp}
+                    min="14.7" max="27.0" step=".1" />
+            </NavSection>
+          </section>
+
+          <NavSection visible={tabsMatch(["departure"])}>
+              <section className="subheader">
+                <p>Normal Takeoff</p>
+              </section>
+              
+              <section className="takeoff_output">
+                <p>Takeoff speed (kts)</p>
+                <Prettified value={NormalTakeoff.getLiftoffSpeed(weight)} />
+                
+                <p>Ground roll (ft)</p>
+                <Prettified value={NormalTakeoff.getDistance(getPressureAltitude(), temperature, weight, wind, /* obstacle= */ 0)} />
+                
+                <p>50 foot speed (kts)</p>
+                <Prettified value={NormalTakeoff.getFiftyFootSpeed(weight)} />
+                
+                <p>50 ft obstacle (ft)</p>
+                <Prettified value={NormalTakeoff.getDistance(getPressureAltitude(), temperature, weight, wind, /* obstacle= */ 1)} />
               </section>
 
-              <NavSection visible={tabsMatch(["departure"])}>
-                  <section className="subheader">
-                    <p>Normal Takeoff</p>
-                  </section>
-                  
-                  <section className="takeoff_output">
-                    <p>Takeoff speed (kts)</p><p>{this.getTakeoffSpeed()}</p>
-                    <p>Ground roll (ft)</p><p>{this.getTakeoffGroundRoll()}</p>
-                    <p>50 foot speed (kts)</p><p>{this.getTakeoffFiftyFootSpeed()}</p>
-                    <p>50 ft obstacle (ft)</p><p>{this.getTakeoff50ft()}</p>
-                  </section>
-
-                  <section className="subheader">
-                    <p>High Performance Takeoff</p>
-                  </section>
-                  
-                  <section className="takeoff_output">
-                    <p>Takeoff speed (kts)</p><p>{this.getShortTakeoffSpeed()}</p>
-                    <p>Ground roll (ft)</p><p>{this.getShortTakeoffGroundRoll()}</p>
-                    <p>50 foot speed (kts)</p><p>{this.getShortTakeoffFiftyFootSpeed()}</p>
-                    <p>50 ft obstacle (ft)</p><p>{this.getShortTakeoff50ft()}</p>
-                  </section>
-                  
-                  <section className="subheader">
-                    <p>Climb</p>
-                  </section>
-                                
-                  <section className="climb_output">
-                    <p>Vy (kts)</p><p>{this.getVy()}</p>
-                    <p>Rate of climb (fpm)</p><p>{this.getRateOfClimb()}</p>
-                    <p className="explanation">Warning: climb performance is currently overestimated due to model limitations</p>                
-                  </section>
-              </NavSection>
+              <section className="subheader">
+                <p>High Performance Takeoff</p>
+              </section>
               
-              <NavSection visible={tabsMatch(["cruise"])}>
-                  <section className="subheader">
-                    <p>Cruise</p>
-                  </section>
+              <section className="takeoff_output">
+                <p>Takeoff speed (kts)</p>
+                <Prettified value={PerformanceTakeoff.getLiftoffSpeed(weight)} />
+                
+                <p>Ground roll (ft)</p>
+                <Prettified value={PerformanceTakeoff.getDistance(getPressureAltitude(), temperature, weight, wind, /* obstacle= */ 0)} />
+                
+                <p>50 foot speed (kts)</p>
+                <Prettified value={PerformanceTakeoff.getFiftyFootSpeed(weight)} />
+                
+                <p>50 ft obstacle (ft)</p>
+                <Prettified value={PerformanceTakeoff.getDistance(getPressureAltitude(), temperature, weight, wind, /* obstacle= */ 1)} />
+              </section>
+              
+              <section className="subheader">
+                <p>Climb</p>
+              </section>
+                            
+              <section className="climb_output">
+                <p>Vy (kts)</p>
+                <Prettified value={Climb.getVy(weight, getPressureAltitude())} />
+                <p>Rate of climb (fpm)</p>
+                <Prettified value={Climb.getRate(getPressureAltitude(), temperature, weight)} />
+                <p className="explanation">Warning: climb performance is currently overestimated due to model limitations</p>                
+              </section>
+          </NavSection>
+          
+          <NavSection visible={tabsMatch(["cruise"])}>
+              <section className="subheader">
+                <p>Cruise</p>
+              </section>
 
-                  <section className="cruise_output">
-                    <p>Power</p><p>{this.getPercentPower()}%</p>
-                    <p>True Airspeed (kts)</p><p>{this.getTrueAirspeed()}</p>
-                    <p>Fuel Flow<br />100 ROP (gph)</p><p>{this.getFuelFlow()}</p>
-                  </section>
-              </NavSection>
+              <section className="cruise_output">
+                <p>Power</p>
+                <Prettified value={Cruise.getPercentPower(getPressureAltitude(), rpm, Math.trunc(mp*10), temperature)} />
+                
+                <p>True Airspeed (kts)</p>
+                <Prettified value={Cruise.getTrueAirspeed(getPressureAltitude(), rpm, Math.trunc(mp*10), temperature, weight)} />
+                
+                <p>Fuel Flow<br />100 ROP (gph)</p>
+                <Prettified value={Cruise.getFuelFlow(getPressureAltitude(), rpm, Math.trunc(mp*10), temperature)} decimals={1} />
+              </section>
+          </NavSection>
 
-              <NavSection visible={tabsMatch(["approach"])}>
-                  <section className="subheader">
-                    <p>Normal Landing</p>
-                  </section>
-                  
-                  <section className="landing_output">
-                    <p>Landing speed (kts)</p><p>{this.getLandingSpeed()}</p>
-                    <p></p><p></p>
-                    <p>Ground roll (ft)</p><p>{this.getLandingGroundRoll()}</p>
-                    <p>50 ft obstacle (ft)</p><p>{this.getLanding50ft()}</p>
-                  </section>             
-                  
-                  <section className="subheader">
-                    <p>Performance Landing</p>
-                  </section>
-                  
-                  <section className="landing_output">
-                    <p>Landing speed (kts)</p><p>{this.getShortLandingSpeed()}</p>
-                    <p></p><p></p>
-                    <p>Ground roll (ft)</p><p>{this.getShortLandingGroundRoll()}</p>
-                    <p>50 ft obstacle (ft)</p><p>{this.getShortLanding50ft()}</p>
-                  </section>
-              </NavSection>
-            </div>
-        );
-    }
+          <NavSection visible={tabsMatch(["approach"])}>
+              <section className="subheader">
+                <p>Normal Landing</p>
+              </section>
+              
+              <section className="landing_output">
+                <p>Landing speed (kts)</p>
+                <Prettified value={NormalLanding.getApproachSpeed(weight)} />
+                
+                <p></p><p></p>
+                
+                <p>Ground roll (ft)</p>
+                <Prettified value={NormalLanding.getDistance(getPressureAltitude(), temperature, weight, wind, /* obstacle= */ 0)} />
+                
+                <p>50 ft obstacle (ft)</p>
+                <Prettified value={NormalLanding.getDistance(getPressureAltitude(), temperature, weight, wind, /* obstacle= */ 1)} />
+              </section>             
+              
+              <section className="subheader">
+                <p>Performance Landing</p>
+              </section>
+              
+              <section className="landing_output">
+                <p>Landing speed (kts)</p>
+                <Prettified value={PerformanceLanding.getApproachSpeed(weight)} />
+                
+                <p></p><p></p>
+                
+                <p>Ground roll (ft)</p>
+                <Prettified value={PerformanceLanding.getDistance(getPressureAltitude(), temperature, weight, wind, /* obstacle= */ 0)} />
+                
+                <p>50 ft obstacle (ft)</p>
+                <Prettified value={PerformanceLanding.getDistance(getPressureAltitude(), temperature, weight, wind, /* obstacle= */ 1)} />
+              </section>  
+          </NavSection>
+        </div>
+    );
 }
 
 export default App;

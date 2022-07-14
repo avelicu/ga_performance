@@ -86,6 +86,8 @@ input[type=range] {
   grid-column-start: span 3;
 }
 
+.invalid { color: red; }
+
 .takeoff_output {
   background-color: #282c34;
   display: grid;
