@@ -49,8 +49,6 @@ const App = () => {
     const [emptyWeight, setEmptyWeight] = useState(1860);
     const [maxGrossWeight, setMaxGrossWeight] = useState(1860);
     
-    const [weight, setWeight] = useStickyState(2500, "weight");
-    
     const [subweights, setSubweights] = useState(false);
     const [subWeightPilot, setSubweightPilot] = useStickyState(190, "subWeightPilot");
     const [subWeightCopilot, setSubweightCopilot] = useStickyState(0, "subWeightCopilot");
@@ -58,6 +56,8 @@ const App = () => {
     const [subWeightPassenger2, setSubweightPassenger2] = useStickyState(0, "subWeightPassenger2");
     const [subWeightCargo, setSubweightCargo] = useStickyState(30, "subWeightCargo");
     const [subWeightFuel, setSubweightFuel] = useStickyState(64, "subWeightFuel");
+
+    const [weight, setWeight] = useStickyState(2500, "weight");    
     
     const [indicatedAltitude, setIndicatedAltitude] = useStickyState(0, "indicatedAltitude");
     const [altimeterSetting, setAltimeterSetting] = useStickyState(29.92, "altimeterSetting");
