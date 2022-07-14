@@ -31,31 +31,44 @@ const Prettified = ({ value, decimals=0 }) => {
     }
 }
 
+const useStickyState = (defaultValue, key) => {
+  const [value, setValue] = useState(() => {
+    const stickyValue = window.localStorage.getItem(key);
+    return stickyValue !== null
+      ? JSON.parse(stickyValue)
+      : defaultValue;
+  });
+  useEffect(() => {
+    window.localStorage.setItem(key, JSON.stringify(value));
+  }, [key, value]);
+  return [value, setValue];
+}
+
 const App = () => {
 
     const [emptyWeight, setEmptyWeight] = useState(1860);
     const [maxGrossWeight, setMaxGrossWeight] = useState(1860);
     
-    const [weight, setWeight] = useState(2500);
+    const [weight, setWeight] = useStickyState(2500, "weight");
     
     const [subweights, setSubweights] = useState(false);
-    const [subWeightPilot, setSubweightPilot] = useState(190);
-    const [subWeightCopilot, setSubweightCopilot] = useState(0);
-    const [subWeightPassenger1, setSubweightPassenger1] = useState(0);
-    const [subWeightPassenger2, setSubweightPassenger2] = useState(0);
-    const [subWeightCargo, setSubweightCargo] = useState(30);
-    const [subWeightFuel, setSubweightFuel] = useState(64);
+    const [subWeightPilot, setSubweightPilot] = useStickyState(190, "subWeightPilot");
+    const [subWeightCopilot, setSubweightCopilot] = useStickyState(0, "subWeightCopilot");
+    const [subWeightPassenger1, setSubweightPassenger1] = useStickyState(0, "subWeightPassenger1");
+    const [subWeightPassenger2, setSubweightPassenger2] = useStickyState(0, "subWeightPassenger2");
+    const [subWeightCargo, setSubweightCargo] = useStickyState(30, "subWeightCargo");
+    const [subWeightFuel, setSubweightFuel] = useStickyState(64, "subWeightFuel");
     
-    const [indicatedAltitude, setIndicatedAltitude] = useState(0);
-    const [altimeterSetting, setAltimeterSetting] = useState(29.92);
+    const [indicatedAltitude, setIndicatedAltitude] = useStickyState(0, "indicatedAltitude");
+    const [altimeterSetting, setAltimeterSetting] = useStickyState(29.92, "altimeterSetting");
     
-    const [temperature, setTemperature] = useState(0);
-    const [wind, setWind] = useState(0);
+    const [temperature, setTemperature] = useStickyState(0, "temperature");
+    const [wind, setWind] = useStickyState(0, "wind");
     
-    const [rpm, setRpm] = useState(2600);
-    const [mp, setMp] = useState(21.7);
+    const [rpm, setRpm] = useStickyState(2600, "rpm");
+    const [mp, setMp] = useStickyState(21.7, "mp");
     
-    const [currentTab, setCurrentTab] = useState('');
+    const [currentTab, setCurrentTab] = useStickyState('', "currentTab");
     
     useEffect(() => {
         setWeight(
