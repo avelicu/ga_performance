@@ -19,7 +19,7 @@ const NavSection = ({ visible, children }) => {
 const InputWithSlider = ({ label, getter, setter, min, max, step, className, onClick }) => {
     return [
         <p className={className} onClick={onClick}>{label}</p>,
-        <p className={className}><input type="range" min={min} max={max} step={step} value={getter} onChange={e => setter(Number(e.target.value))} /></p>,
+        <p className={className + " noscroll"}><input type="range" min={min} max={max} step={step} value={getter} onChange={e => setter(Number(e.target.value))} /></p>,
         <p className={className}><input type="text" inputMode="numeric" value={getter} onChange={e => setter(Number(e.target.value))} /></p>,
     ]
 }
