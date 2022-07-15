@@ -6,6 +6,7 @@ import { NormalTakeoff, PerformanceTakeoff } from './models/Takeoff.js';
 import { NormalLanding, PerformanceLanding } from './models/Landing.js';
 import { Climb } from './models/Climb.js';
 import { Cruise } from './models/Cruise.js';
+import { Temps } from './models/Temps.js';
 
 const NavSection = ({ visible, children }) => {
     if (visible) {
@@ -89,8 +90,13 @@ const App = () => {
         subWeightFuel]);
 
     const getPressureAltitude = () => {
-        return Math.round(+indicatedAltitude + (29.92 - altimeterSetting) * 1000);
-        // JS is weird, we need the first + to cast to an int, otherwise second + will concatenate strings..
+        return Math.round(indicatedAltitude + (29.92 - altimeterSetting) * 1000);
+    }
+    
+    const getDensityAltitude = () => {
+        var pressureAltitude = getPressureAltitude();
+        var standardTemperature = Temps.getStandardTemperature(pressureAltitude);
+        return Math.round(pressureAltitude + 120 * (temperature - standardTemperature));
     }
     
     const NavButton = ({ tab, children }) => {
@@ -142,19 +148,19 @@ const App = () => {
                 </NavSection>
                 
                 <InputWithSlider
-                    label={"Indicated Altitude (ft): (PA: " + getPressureAltitude() + ")"}
+                    label="Indicated Altitude (ft)"
                     getter={indicatedAltitude}
                     setter={setIndicatedAltitude}
                     min="0" max="16000" step="500" />
 
                 <InputWithSlider
-                    label="Altimeter Setting (inHg):"
+                    label={["Altimeter Setting (inHg)", <br />, "Pressure Altitude: " + getPressureAltitude()]}
                     getter={altimeterSetting}
                     setter={setAltimeterSetting}
                     min="29.60" max="30.40" step=".01" />
 
                 <InputWithSlider
-                    label="Temperature (&deg;C)"
+                    label={["Temperature (°C)", <br />, "Density Altitude: " + getDensityAltitude()]}
                     getter={temperature}
                     setter={setTemperature}
                     min="-40" max="60" step="1" />

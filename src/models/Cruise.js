@@ -1,4 +1,5 @@
 import { interpolate, interpolate2d, interpolate3d } from './Interpolator.js';
+import { Temps } from './Temps.js';
 
 class Cruise {
 
@@ -56,18 +57,7 @@ class Cruise {
             2400: {                                                   90: 162 },
         },
     }
-    
-    static _stdtemp = {
-            0:  15,
-         2000:  11,
-         4000:   7,
-         6000:   3,
-         8000:  -1,
-        10000:  -5,
-        12000:  -9,
-        14000: -13,
-    }
-    
+        
     static _pa_oat = {
             0: {  "15": 0, 60: 90 },
          2000: {  "-5": 0, 60: 145 },
@@ -114,7 +104,7 @@ class Cruise {
             return null;
         }
         
-        var stdtemp = interpolate(this._stdtemp, pa);
+        var stdtemp = Temps.getStandardTemperature(pa);
         var mpcorrection = (oat-stdtemp)*4.0/10; // 0.4" per 10 degrees difference
         return (uncorrected_mp + mpcorrection) / 10.0;
     }
