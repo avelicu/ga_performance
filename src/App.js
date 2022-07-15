@@ -151,7 +151,7 @@ const App = () => {
                     label="Altimeter Setting (inHg):"
                     getter={altimeterSetting}
                     setter={setAltimeterSetting}
-                    min="28.1" max="31" step=".01" />
+                    min="29.60" max="30.40" step=".01" />
 
                 <InputWithSlider
                     label="Temperature (&deg;C)"
