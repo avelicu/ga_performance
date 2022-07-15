@@ -15,9 +15,9 @@ const NavSection = ({ visible, children }) => {
     }
 }
 
-const InputWithSlider = ({ label, getter, setter, min, max, step, className }) => {
+const InputWithSlider = ({ label, getter, setter, min, max, step, className, onClick }) => {
     return [
-        <p className={className}>{label}</p>,
+        <p className={className} onClick={onClick}>{label}</p>,
         <p className={className}><input type="range" min={min} max={max} step={step} value={getter} onChange={e => setter(Number(e.target.value))} /></p>,
         <p className={className}><input type="text" inputMode="numeric" value={getter} onChange={e => setter(Number(e.target.value))} /></p>,
     ]
@@ -66,7 +66,7 @@ const App = () => {
     const [wind, setWind] = useStickyState(0, "wind");
     
     const [rpm, setRpm] = useStickyState(2600, "rpm");
-    const [mp, setMp] = useStickyState(21.7, "mp");
+    const [percentPower, setPercentPower] = useStickyState(65, "percentPower");
     
     const [currentTab, setCurrentTab] = useStickyState('', "currentTab");
     
@@ -108,7 +108,7 @@ const App = () => {
     return (
         <div className="App">
             <div className="fixed-nav-bar">
-                <NavButton tab="">All</NavButton>
+                <NavButton tab="config">Configuration</NavButton>
                 <NavButton tab="departure">Takeoff &amp; Climb</NavButton>
                 <NavButton tab="cruise">Cruise</NavButton>
                 <NavButton tab="approach">Approach &amp; Landing</NavButton>
@@ -120,11 +120,18 @@ const App = () => {
           </header>
           
           <section className="input">
+            <NavSection visible={tabsMatch(["config"])}>
+                <InputWithSlider label="Empty Weight" getter={emptyWeight} setter={setEmptyWeight} min="1700" max="2000" step="1" />
+            </NavSection>
+            
             <NavSection visible={tabsMatch(["departure", "cruise", "approach"])}>
-                <p onClick={() => setSubweights(!subweights)}>Weight (lbs): 0+{weight - emptyWeight} ℹ️</p>
-                <p><input type="range" min={emptyWeight} max="2740" step="10" value={weight} onChange={e => setWeight(Number(e.target.value))} /></p>
-                <p><input type="text" inputMode="numeric" value={weight} onChange={e => setWeight(Number(e.target.value))} /></p>
-                
+                <InputWithSlider
+                    label={"Weight (lbs): 0+" + (weight - emptyWeight) + " ℹ️"}
+                    onClick={() => setSubweights(!subweights)}
+                    getter={weight}
+                    setter={setWeight}
+                    min={emptyWeight} max="2740" step="10" />
+
                 <NavSection visible={subweights}>
                     <InputWithSlider className="subsection" label="Pilot" getter={subWeightPilot} setter={setSubweightPilot} min="0" max="400" step="10" />
                     <InputWithSlider className="subsection" label="Copilot" getter={subWeightCopilot} setter={setSubweightCopilot} min="0" max="400" step="10" />
@@ -135,7 +142,7 @@ const App = () => {
                 </NavSection>
                 
                 <InputWithSlider
-                    label={"Indicated Altitude(feet): (PA: " + getPressureAltitude() + ")"}
+                    label={"Indicated Altitude (ft): (PA: " + getPressureAltitude() + ")"}
                     getter={indicatedAltitude}
                     setter={setIndicatedAltitude}
                     min="0" max="16000" step="500" />
@@ -159,20 +166,6 @@ const App = () => {
                     getter={wind}
                     setter={setWind}
                     min="-10" max="20" step="1" />
-            </NavSection>
-            
-            <NavSection visible={tabsMatch(["cruise"])}>
-                <InputWithSlider
-                    label="RPM"
-                    getter={rpm}
-                    setter={setRpm}
-                    min="2000" max="2700" step="100" />
-                
-                <InputWithSlider
-                    label="MP"
-                    getter={mp}
-                    setter={setMp}
-                    min="14.7" max="27.0" step=".1" />
             </NavSection>
           </section>
 
@@ -231,15 +224,29 @@ const App = () => {
                 <p>Cruise</p>
               </section>
 
+              <section className="input">
+                <InputWithSlider
+                    label="RPM"
+                    getter={rpm}
+                    setter={setRpm}
+                    min="2000" max="2700" step="100" />
+                
+                <InputWithSlider
+                    label="% Power"
+                    getter={percentPower}
+                    setter={setPercentPower}
+                    min="45" max="75" step="1" />
+              </section>
+          
               <section className="cruise_output">
-                <p>Power</p>
-                <Prettified value={Cruise.getPercentPower(getPressureAltitude(), rpm, Math.trunc(mp*10), temperature)} />
+                <p>MP</p>
+                <Prettified value={Cruise.getMp(getPressureAltitude(), rpm, percentPower, temperature)} decimals="1" />
                 
                 <p>True Airspeed (kts)</p>
-                <Prettified value={Cruise.getTrueAirspeed(getPressureAltitude(), rpm, Math.trunc(mp*10), temperature, weight)} />
+                <Prettified value={Cruise.getTrueAirspeed(getPressureAltitude(), rpm, percentPower, temperature, weight)} />
                 
                 <p>Fuel Flow<br />100 ROP (gph)</p>
-                <Prettified value={Cruise.getFuelFlow(getPressureAltitude(), rpm, Math.trunc(mp*10), temperature)} decimals={1} />
+                <Prettified value={Cruise.getFuelFlow(getPressureAltitude(), rpm, percentPower, temperature)} decimals="1" />
               </section>
           </NavSection>
 
