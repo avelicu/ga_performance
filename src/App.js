@@ -24,11 +24,11 @@ const InputWithSlider = ({ label, getter, setter, min, max, step, className, onC
     ]
 }
 
-const Prettified = ({ value, decimals=0 }) => {
+const Prettified = ({ value, decimals=0, unit='' }) => {
     if (value == null) {
         return <p className="invalid">⚠</p>
     } else {
-        return <p>{Number(value).toFixed(decimals)}</p>
+        return <p>{Number(value).toFixed(decimals)} {unit}</p>
     }
 }
 
@@ -69,7 +69,7 @@ const App = () => {
     const [rpm, setRpm] = useStickyState(2600, "rpm");
     const [percentPower, setPercentPower] = useStickyState(65, "percentPower");
     
-    const [currentTab, setCurrentTab] = useStickyState('', "currentTab");
+    const [currentTab, setCurrentTab] = useStickyState('config', "currentTab");
     
     useEffect(() => {
         setWeight(
@@ -154,13 +154,13 @@ const App = () => {
                     min="0" max="16000" step="500" />
 
                 <InputWithSlider
-                    label={["Altimeter Setting (inHg)", <br />, "Pressure Altitude: " + getPressureAltitude()]}
+                    label={["Altimeter Setting (inHg)", <br />, "Pressure Altitude: " + getPressureAltitude() + " ft"]}
                     getter={altimeterSetting}
                     setter={setAltimeterSetting}
                     min="29.60" max="30.40" step=".01" />
 
                 <InputWithSlider
-                    label={["Temperature (°C)", <br />, "Density Altitude: " + getDensityAltitude()]}
+                    label={["Temperature (°C)", <br />, "Density Altitude: " + getDensityAltitude() + " ft"]}
                     getter={temperature}
                     setter={setTemperature}
                     min="-40" max="60" step="1" />
@@ -181,17 +181,17 @@ const App = () => {
               </section>
               
               <section className="takeoff_output">
-                <p>Takeoff speed (kts)</p>
-                <Prettified value={NormalTakeoff.getLiftoffSpeed(weight)} />
+                <p>Takeoff speed</p>
+                <Prettified value={NormalTakeoff.getLiftoffSpeed(weight)} unit="kts" />
                 
-                <p>Ground roll (ft)</p>
-                <Prettified value={NormalTakeoff.getDistance(getPressureAltitude(), temperature, weight, wind, /* obstacle= */ 0)} />
+                <p>Ground roll</p>
+                <Prettified value={NormalTakeoff.getDistance(getPressureAltitude(), temperature, weight, wind, /* obstacle= */ 0)} unit="ft" />
                 
-                <p>50 foot speed (kts)</p>
-                <Prettified value={NormalTakeoff.getFiftyFootSpeed(weight)} />
+                <p>50 foot speed</p>
+                <Prettified value={NormalTakeoff.getFiftyFootSpeed(weight)} unit="kts" />
                 
-                <p>50 ft obstacle (ft)</p>
-                <Prettified value={NormalTakeoff.getDistance(getPressureAltitude(), temperature, weight, wind, /* obstacle= */ 1)} />
+                <p>50 ft obstacle</p>
+                <Prettified value={NormalTakeoff.getDistance(getPressureAltitude(), temperature, weight, wind, /* obstacle= */ 1)} unit="ft" />
               </section>
 
               <section className="subheader">
@@ -199,17 +199,17 @@ const App = () => {
               </section>
               
               <section className="takeoff_output">
-                <p>Takeoff speed (kts)</p>
-                <Prettified value={PerformanceTakeoff.getLiftoffSpeed(weight)} />
+                <p>Takeoff speed</p>
+                <Prettified value={PerformanceTakeoff.getLiftoffSpeed(weight)} unit="kts" />
                 
-                <p>Ground roll (ft)</p>
-                <Prettified value={PerformanceTakeoff.getDistance(getPressureAltitude(), temperature, weight, wind, /* obstacle= */ 0)} />
+                <p>Ground roll</p>
+                <Prettified value={PerformanceTakeoff.getDistance(getPressureAltitude(), temperature, weight, wind, /* obstacle= */ 0)} unit="ft" />
                 
-                <p>50 foot speed (kts)</p>
-                <Prettified value={PerformanceTakeoff.getFiftyFootSpeed(weight)} />
+                <p>50 foot speed</p>
+                <Prettified value={PerformanceTakeoff.getFiftyFootSpeed(weight)} unit="kts" />
                 
-                <p>50 ft obstacle (ft)</p>
-                <Prettified value={PerformanceTakeoff.getDistance(getPressureAltitude(), temperature, weight, wind, /* obstacle= */ 1)} />
+                <p>50 ft obstacle</p>
+                <Prettified value={PerformanceTakeoff.getDistance(getPressureAltitude(), temperature, weight, wind, /* obstacle= */ 1)} unit="ft" />
               </section>
               
               <section className="subheader">
@@ -217,10 +217,10 @@ const App = () => {
               </section>
                             
               <section className="climb_output">
-                <p>Vy (kts)</p>
-                <Prettified value={Climb.getVy(weight, getPressureAltitude())} />
-                <p>Rate of climb (fpm)</p>
-                <Prettified value={Climb.getRate(getPressureAltitude(), temperature, weight)} />
+                <p>Vy</p>
+                <Prettified value={Climb.getVy(weight, getPressureAltitude())} unit="kts" />
+                <p>Rate of climb</p>
+                <Prettified value={Climb.getRate(getPressureAltitude(), temperature, weight)} unit="fpm" />
                 <p className="explanation">Warning: climb performance is currently overestimated due to model limitations</p>                
               </section>
           </NavSection>
@@ -246,13 +246,13 @@ const App = () => {
           
               <section className="cruise_output">
                 <p>MP</p>
-                <Prettified value={Cruise.getMp(getPressureAltitude(), rpm, percentPower, temperature)} decimals="1" />
+                <Prettified value={Cruise.getMp(getPressureAltitude(), rpm, percentPower, temperature)} decimals="1" unit={"\""} />
                 
-                <p>True Airspeed (kts)</p>
-                <Prettified value={Cruise.getTrueAirspeed(getPressureAltitude(), rpm, percentPower, temperature, weight)} />
+                <p>True Airspeed</p>
+                <Prettified value={Cruise.getTrueAirspeed(getPressureAltitude(), rpm, percentPower, temperature, weight)} unit="kts"/>
                 
-                <p>Fuel Flow<br />100 ROP (gph)</p>
-                <Prettified value={Cruise.getFuelFlow(getPressureAltitude(), rpm, percentPower, temperature)} decimals="1" />
+                <p>Fuel Flow 100ROP</p>
+                <Prettified value={Cruise.getFuelFlow(getPressureAltitude(), rpm, percentPower, temperature)} decimals="1" unit="gph" />
               </section>
           </NavSection>
 
@@ -262,16 +262,16 @@ const App = () => {
               </section>
               
               <section className="landing_output">
-                <p>Landing speed (kts)</p>
-                <Prettified value={NormalLanding.getApproachSpeed(weight)} />
+                <p>Landing speed</p>
+                <Prettified value={NormalLanding.getApproachSpeed(weight)} unit="kts"/>
                 
                 <p></p><p></p>
                 
-                <p>Ground roll (ft)</p>
-                <Prettified value={NormalLanding.getDistance(getPressureAltitude(), temperature, weight, wind, /* obstacle= */ 0)} />
+                <p>Ground roll</p>
+                <Prettified value={NormalLanding.getDistance(getPressureAltitude(), temperature, weight, wind, /* obstacle= */ 0)} unit="ft"/>
                 
-                <p>50 ft obstacle (ft)</p>
-                <Prettified value={NormalLanding.getDistance(getPressureAltitude(), temperature, weight, wind, /* obstacle= */ 1)} />
+                <p>50 ft obstacle</p>
+                <Prettified value={NormalLanding.getDistance(getPressureAltitude(), temperature, weight, wind, /* obstacle= */ 1)} unit="ft"/>
               </section>             
               
               <section className="subheader">
@@ -279,16 +279,16 @@ const App = () => {
               </section>
               
               <section className="landing_output">
-                <p>Landing speed (kts)</p>
-                <Prettified value={PerformanceLanding.getApproachSpeed(weight)} />
+                <p>Landing speed</p>
+                <Prettified value={PerformanceLanding.getApproachSpeed(weight)} unit="kts" />
                 
                 <p></p><p></p>
                 
-                <p>Ground roll (ft)</p>
-                <Prettified value={PerformanceLanding.getDistance(getPressureAltitude(), temperature, weight, wind, /* obstacle= */ 0)} />
+                <p>Ground roll</p>
+                <Prettified value={PerformanceLanding.getDistance(getPressureAltitude(), temperature, weight, wind, /* obstacle= */ 0)} unit="ft" />
                 
-                <p>50 ft obstacle (ft)</p>
-                <Prettified value={PerformanceLanding.getDistance(getPressureAltitude(), temperature, weight, wind, /* obstacle= */ 1)} />
+                <p>50 ft obstacle</p>
+                <Prettified value={PerformanceLanding.getDistance(getPressureAltitude(), temperature, weight, wind, /* obstacle= */ 1)} unit="ft" />
               </section>  
           </NavSection>
         </div>
