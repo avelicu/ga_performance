@@ -154,16 +154,16 @@ const App = () => {
                     min="0" max="16000" step="500" />
 
                 <InputWithSlider
-                    label={["Altimeter Setting (inHg)", <br />, "Pressure Altitude: " + getPressureAltitude() + " ft"]}
+                    label="Altimeter Setting (inHg)"
                     getter={altimeterSetting}
                     setter={setAltimeterSetting}
                     min="29.60" max="30.40" step=".01" />
 
                 <InputWithSlider
-                    label={["Temperature (°C)", <br />, "Density Altitude: " + getDensityAltitude() + " ft"]}
+                    label="OAT (°C)"
                     getter={temperature}
                     setter={setTemperature}
-                    min="-40" max="60" step="1" />
+                    min="-20" max="45" step="1" />
             </NavSection>
 
             <NavSection visible={tabsMatch(["departure", "approach"])}>
@@ -175,6 +175,15 @@ const App = () => {
             </NavSection>
           </section>
 
+          <NavSection visible={tabsMatch(["departure", "cruise", "approach"])}>
+              <section className="altitudes_output">
+                 <p>Pressure Altitude</p>
+                 <Prettified value={getPressureAltitude()} unit="ft" />
+                 
+                 <p>Density Altitude</p>
+                 <Prettified value={getDensityAltitude()} unit="ft" />
+              </section>
+          </NavSection>
           <NavSection visible={tabsMatch(["departure"])}>
               <section className="subheader">
                 <p>Normal Takeoff</p>

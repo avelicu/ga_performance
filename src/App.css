@@ -88,6 +88,14 @@ input[type=range] {
 
 .invalid { color: red; }
 
+.altitudes_output {
+  background-color: #282c34;
+  display: grid;
+  grid-template-columns: 2fr 1fr 2fr 1fr;
+  color: white;
+  padding: 0px;    
+}
+
 .takeoff_output {
   background-color: #282c34;
   display: grid;
