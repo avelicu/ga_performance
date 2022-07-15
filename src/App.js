@@ -144,25 +144,39 @@ const App = () => {
                     <InputWithSlider className="subsection" label="Passenger 1" getter={subWeightPassenger1} setter={setSubweightPassenger1} min="0" max="400" step="10" />
                     <InputWithSlider className="subsection" label="Passenger 2" getter={subWeightPassenger2} setter={setSubweightPassenger2} min="0" max="400" step="10" />
                     <InputWithSlider className="subsection" label="Cargo" getter={subWeightCargo} setter={setSubweightCargo} min="0" max="400" step="10" />
-                    <InputWithSlider className="subsection" label="Fuel (gals)" getter={subWeightFuel} setter={setSubweightFuel} min="0" max="64" step="1" />
+                    <InputWithSlider
+                        className="subsection"
+                        label="Fuel (gals)"
+                        getter={subWeightFuel}
+                        setter={setSubweightFuel}
+                        min="0" max="64" step="1"
+                        onClick={() => setSubweightFuel(50)}/>
                 </NavSection>
                 
                 <InputWithSlider
                     label="Indicated Altitude (ft)"
                     getter={indicatedAltitude}
                     setter={setIndicatedAltitude}
+                    onClick={() => setIndicatedAltitude(0)}
                     min="0" max="16000" step="500" />
 
                 <InputWithSlider
                     label="Altimeter Setting (inHg)"
                     getter={altimeterSetting}
                     setter={setAltimeterSetting}
+                    onClick={() => setAltimeterSetting(29.92)}
                     min="29.60" max="30.40" step=".01" />
 
                 <InputWithSlider
                     label="OAT (°C)"
                     getter={temperature}
                     setter={setTemperature}
+                    onClick={() => {
+                        var standardTemperature = Temps.getStandardTemperature(getPressureAltitude());
+                        if (standardTemperature != null) {
+                            setTemperature(Math.round(standardTemperature));
+                        }
+                    }}
                     min="-20" max="45" step="1" />
             </NavSection>
 
@@ -171,6 +185,8 @@ const App = () => {
                     label="Headwind (kts)"
                     getter={wind}
                     setter={setWind}
+                    onClick={() => setWind(0)}
+                    defaultValue="0"
                     min="-10" max="20" step="1" />
             </NavSection>
           </section>
@@ -244,12 +260,14 @@ const App = () => {
                     label="RPM"
                     getter={rpm}
                     setter={setRpm}
+                    onClick={() => setRpm(2600)}
                     min="2000" max="2700" step="100" />
                 
                 <InputWithSlider
                     label="% Power"
                     getter={percentPower}
                     setter={setPercentPower}
+                    onClick={() => setPercentPower(65)}
                     min="45" max="75" step="1" />
               </section>
           
